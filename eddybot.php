@@ -271,8 +271,8 @@ function processMessage($message) {
         $file = fopen('same/same_'.$sender[username].'.txt', "w");
         fwrite($file, $strike);
         fclose($file);
-        if (rand(0, 2) == 0) {
-          apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].' '.$sender[last_name].', you can\'t just keep saying same'));
+        if (rand(0, 3) == 0) {
+          apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same.'));
         }
     } else if (stripos($text, "/samecount") === 0) {
         $args = preg_split("/[\s,]+/", $text);
