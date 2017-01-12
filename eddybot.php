@@ -349,6 +349,8 @@ function processMessage($message) {
         if (rand(0, 3) == 0) {
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same.'));
         }
+    } else if (strtolower($text) == "oh no") {
+        apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "http://68.media.tumblr.com/avatar_78d0e9a0b226_128.png"));
     }
     
     
