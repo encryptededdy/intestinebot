@@ -259,21 +259,6 @@ function processMessage($message) {
         $mapsURL = 'https://maps.googleapis.com/maps/api/staticmap?zoom=8&size=480x480&markers='.$coord[1].','.$coord[0].'&key='.$gm_key.'&maptype=hybrid';
         apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => $mapsURL));
         //apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $pubID));
-    } else if ((stripos($text, "same") !== false) && (stripos($text, "/samecount") !== 0)) {
-        // this really really needs to be updated to just use SQL
-	      $file = fopen('same/same_'.$sender[username].'.txt', "r");
-        $strike = fgets($file);
-        if (empty($strike)) {
-          $strike = 1;
-        } else {
-          $strike++;
-        }
-        $file = fopen('same/same_'.$sender[username].'.txt', "w");
-        fwrite($file, $strike);
-        fclose($file);
-        if (rand(0, 3) == 0) {
-          apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same.'));
-        }
     } else if (stripos($text, "/samecount") === 0) {
         $args = preg_split("/[\s,]+/", $text);
         if (empty($args[1])) {
@@ -349,6 +334,21 @@ function processMessage($message) {
         }
         $scrambled = preg_replace('/(\w+)/e', 'scramble_word("\1")', $text);
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $scrambled));
+    } else if ((stripos($text, "same") !== false) && (stripos($text, "/samecount") !== 0)) {
+        // this really really needs to be updated to just use SQL
+        $file = fopen('same/same_'.$sender[username].'.txt', "r");
+        $strike = fgets($file);
+        if (empty($strike)) {
+            $strike = 1;
+        } else {
+            $strike++;
+        }
+        $file = fopen('same/same_'.$sender[username].'.txt', "w");
+        fwrite($file, $strike);
+        fclose($file);
+        if (rand(0, 3) == 0) {
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same.'));
+        }
     }
     
     
