@@ -346,8 +346,21 @@ function processMessage($message) {
         $file = fopen('same/same_'.$sender[username].'.txt', "w");
         fwrite($file, $strike);
         fclose($file);
-        if (rand(0, 3) == 0) {
-            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same.'));
+        //
+        $probf = fopen('sameprob.txt', "r");
+        $probr = fgets($probf);
+        if ($probr <= 2) {
+            $prob = 100;
+        } else {
+            $prob = floor($probr / 2);
+        }
+        $probf = fopen('sameprob.txt', "w");
+        fwrite($probf, $prob);
+        fclose($probf);
+        if (rand(1, $probr) == 1) {
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same. (probability was 1/'.$probr.', setting to 1/'.$prob.')'));
+        } else {
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'same probability set to 1/'.$prob));
         }
     } else if (strtolower($text) == "oh no") {
         apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "http://68.media.tumblr.com/avatar_78d0e9a0b226_128.png"));
