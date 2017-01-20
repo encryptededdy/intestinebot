@@ -359,7 +359,7 @@ function processMessage($message) {
             $prob = 100;
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name].', you can\'t just keep saying same. (probability was 1/'.$probr.', setting to 1/'.$prob.')'));
         } else {
-            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'same probability set to 1/'.$prob));
+//            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'same probability set to 1/'.$prob));
         }
         fwrite($probf, $prob);
         fclose($probf);
