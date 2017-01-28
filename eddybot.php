@@ -1,4 +1,4 @@
-<?php
+ <?php
 include 'keys.php';
 
 define('BOT_TOKEN', $bot_token);
@@ -215,6 +215,9 @@ function processMessage($message) {
     } else if (strpos($text, "/austin") === 0) {
         $austin = file_get_contents("https://zhang.nz/austin.php?api=1");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $austin));
+    } else if (strpos($text, "/audiotest") === 0) {
+        global $rick;
+        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "voice" => $rick));
     } else if (strpos($text, "/asb") === 0) {
         $asb = file_get_contents("https://zhang.nz/botgen/asb.php");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
