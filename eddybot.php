@@ -221,6 +221,9 @@ function processMessage($message) {
     } else if (strpos($text, "/asb") === 0) {
         $asb = file_get_contents("https://zhang.nz/botgen/asb.php");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
+    } else if (strpos($text, "/bs") === 0) {
+        $asb = file_get_contents("https://zhang.nz/botgen/corporatebs.php");
+        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
     } else if (strpos($text, "/globalwarming") === 0) {
         $asb = file_get_contents("https://zhang.nz/botgen/donald.php");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
