@@ -339,7 +339,7 @@ function processMessage($message) {
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $scrambled));
     } else if (stripos($text, "/aesthetic ") === 0) {
         $text = substr($text, 11);
-        $fullwidth = mb_convert_kana($text, "R");
+        $fullwidth = mb_convert_kana($text, "A");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $fullwidth));
     } else if ((stripos($text, "same") !== false) && (stripos($text, "/samecount") !== 0)) {
         // this really really needs to be updated to just use SQL
