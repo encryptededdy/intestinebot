@@ -312,6 +312,14 @@ function processMessage($message) {
         //apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => "executed; result = ".$result));
 	      sleep(1);
         apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "https://zhang.nz/231285106/intestinebot/comic_".$thyme.".png"));
+    } else if (stripos($text, "/wow") === 0) {
+        global $servername, $username, $password, $dbname;
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
+        $sql = "SELECT * FROM `chatlog_ece` WHERE `chatid` = ".$chat_id." ORDER BY `datetime` DESC LIMIT 1";
+        $result = mysqli_query($conn, $sql);
+        $array = mysqli_fetch_array($result, MYSQLI_ASSOC);
+        mysqli_close($conn);
+        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => "Wow ".$array['firstname']));
     } else if (stripos($text, "/doggo") === 0) {
         global $client_id;
         $ch = curl_init();
