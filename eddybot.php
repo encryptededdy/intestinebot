@@ -232,8 +232,8 @@ function processMessage($message) {
     } else if (strpos($text, "/westpac") === 0) {
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => '紅色是一個很好的顏色'));
     } else if (strpos($text, "/drone") === 0) {
-        $yigetime = floor((time() - 1459331689)/86400);
-        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Yige\'s drone is not finished. It has been '.$yigetime.' days since she got her drone parts'));
+        //$yigetime = floor((time() - 1459331689)/86400);
+        apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "https://zhang.nz/botgen/yigedrone.php?meme=".time()));
     } else if (strpos($text, "/asus") === 0) {
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'sns∀'));
     } else if (strpos($text, "/quake") === 0) {
@@ -352,6 +352,15 @@ function processMessage($message) {
         $text = substr($text, 11);
         $fullwidth = mb_convert_kana($text, "A");
         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $fullwidth));
+    } else if (stripos($text, "/shitpost ") === 0) {
+        $text = substr($text, 10);
+        $exploded = explode(" ", $text);
+        $out = "";
+        // 👏
+        foreach ($exploded as $word) {
+            $out = $out . " " . strtoupper($word) . " 👏";
+        }
+        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $out));
     } else if ((stripos($text, "same") !== false) && (stripos($text, "/samecount") !== 0)) {
         // this really really needs to be updated to just use SQL
         $file = fopen('same/same_'.$sender[username].'.txt', "r");
@@ -381,9 +390,9 @@ function processMessage($message) {
         }
         fwrite($probf, $prob);
         fclose($probf);
-    } else if (strtolower($text) == "oh no") {
-        apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "http://68.media.tumblr.com/avatar_78d0e9a0b226_128.png"));
-    }
+    } //else if (strtolower($text) == "oh no") {
+      //  apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "http://68.media.tumblr.com/avatar_78d0e9a0b226_128.png"));
+   // }
     
     
     // Stores messages into db
