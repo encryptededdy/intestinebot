@@ -4,7 +4,7 @@ include 'keys.php';
 define('BOT_TOKEN', $bot_token);
 define('API_URL', 'https://api.telegram.org/bot' . BOT_TOKEN . '/');
 
-abstract class Commands
+class Commands
 {
     const    aesthetic = "/aesthetic ";
     const    dear = "/dear ";
@@ -401,7 +401,7 @@ function processMessage($message)
             }
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $out));
         } else if (stripos($text, Commands::help) === 0) {
-            $reflect = new ReflectionClass(get_class(Commands::class));
+            $reflect = new ReflectionClass(Commands::class);
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => implode("\n", $reflect->getConstants())));
         } else if ((stripos($text, "same") !== false) && (stripos($text, Commands::samecount) !== 0)) {
             // this really really needs to be updated to just use SQL
