@@ -32,6 +32,7 @@ class Commands
     const    doggo = "/doggo";
     const    lauren = "/lauren ";
     const    shitpost = "/shitpost ";
+    const    trade = "/trade";
     const    help = "/help";
 }
 
@@ -438,6 +439,95 @@ function processMessage($message)
             }
             fwrite($probf, $prob);
             fclose($probf);
+        } else if (stripos($text, Commands::trade) === 0) {
+            $args = preg_split("/[\s,]+/", $text);
+            // Check user is registered
+            global $servername, $username, $password, $dbname;
+            $conn = new mysqli($servername, $username, $password, $dbname);
+            $stmt = $conn->prepare("SELECT usdbalance, cryptobalance FROM `tradingsimulator` WHERE userid = ?");
+            $stmt->bind_param("i", $sender['id']);
+            $stmt->execute();
+            $stmt->bind_result($balUSD, $balCrypto);
+            $result = $stmt->fetch();
+            $stmt->store_result();
+
+            // Get Price
+            $btcjson = file_get_contents("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD");
+            $btcdata = json_decode($btcjson, true);
+            $btcprice = $btcdata["USD"];
+
+            // Prepare log statement
+            $logstmt = $conn->prepare("INSERT INTO `tradingsimulatorlog` (`userid`, `crypto`, `usd`, `price`) VALUES (?, ?, ?, ?)");
+            $logstmt->bind_param("iddd", $sender['id'], $changeCrypto, $changeUSD, $btcprice);            
+
+            if (!$result) {
+                // Starting values
+                $startingUSD = 0;
+                $startingCrypto = 1;
+                // Create account
+                $stmt = $conn->prepare("INSERT INTO `tradingsimulator` (`userid`, `usdbalance`, `cryptobalance`) VALUES (?, ?, ?)");
+                $stmt->bind_param("idd", $sender['id'], $startingUSD, $startingCrypto);
+                $stmt->execute();
+                // Log this
+                $changeCrypto = $startingCrypto;
+                $changeUSD = $startingUSD;
+                $logstmt->execute();
+
+                apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'New Account Created with $0.00 USD and Ƀ1.00 BTC'));
+                return;
+            }
+
+            // Prepare write statement
+            $writestmt = $conn->prepare("UPDATE `tradingsimulator` SET `usdbalance` = ?, `cryptobalance` = ? WHERE `userid` = ?");
+            $writestmt->bind_param("ddi", $balUSD, $balCrypto, $sender['id']);
+
+            if ($args[1] == "balance") {
+                // Check balance
+                apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => '$'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC'));
+            } else if ($args[1] == "buy") {
+                if (is_numeric($args[2]) && $args[2] > 0) {
+                    // Buy Bitcoin
+                    $amountCrypto = $args[2];
+                    $amountUSD = $amountCrypto*$btcprice;
+                    if ($amountUSD > $balUSD) {
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Insufficent USD funds (you need $'.$amountUSD.')'));
+                    } else {
+                        $balUSD = $balUSD - $amountUSD;
+                        $balCrypto = $balCrypto + $amountCrypto;
+                        $writestmt->execute();
+                        // Log this
+                        $changeCrypto = $amountCrypto;
+                        $changeUSD = -1 * $amountUSD;
+                        $logstmt->execute();
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Purchased Ƀ'.$amountCrypto.' BTC for $'.$amountUSD.' USD, at price $'.$btcprice.' USD/BTC. Your balance is now $'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC'));
+                    }
+                } else {
+                    apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Please specify the amount of BTC to purchase'));
+                }
+            } else if ($args[1] == "sell") {
+                if (is_numeric($args[2]) && $args[2] > 0) {
+                    // Sell Bitcoin
+                    $amountCrypto = $args[2];
+                    $amountUSD = $amountCrypto*$btcprice;
+                    if ($amountCrypto > $balCrypto) {
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Insufficent BTC funds (you need Ƀ'.$amountCrypto.')'));
+                    } else {
+                        $balUSD = $balUSD + $amountUSD;
+                        $balCrypto = $balCrypto - $amountCrypto;
+                        $writestmt->execute();
+                        // Log this
+                        $changeCrypto = -1 * $amountCrypto;
+                        $changeUSD = $amountUSD;
+                        $logstmt->execute();
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Sold Ƀ'.$amountCrypto.' BTC for $'.$amountUSD.' USD, at price $'.$btcprice.' USD/BTC. Your balance is now $'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC'));
+                    }
+                } else {
+                    apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Please specify the amount of BTC to sell'));
+                }
+
+            } else {
+                apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Bad Command: try /trade balance, /trade buy xx, /trade sell xx'));
+            }
         } //else if (strtolower($text) == "oh no") {
         //  apiRequestWebhook("sendPhoto", array('chat_id' => $chat_id, "photo" => "http://68.media.tumblr.com/avatar_78d0e9a0b226_128.png"));
         // }
