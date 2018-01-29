@@ -14,7 +14,7 @@ class Commands
     const    mitochondria = "/mitochondria ";
     const    shruggie = "/shruggie ";
     const    define = "/define ";
-    const    bitcoin = "/bitcoin ";
+    const    crypto = "/crypto ";
     const    austin = "/austin ";
     const    asb = "/asb ";
     const    bs = "/bs ";
@@ -245,10 +245,16 @@ function processMessage($message)
                 }
             }
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $def));
-        } else if (strpos($text, "/bitcoin") === 0) {
-            $btcjson = file_get_contents("https://api.coindesk.com/v1/bpi/currentprice.json");
+        } else if (strpos($text, "/crypto") === 0) {
+            $btcjson = file_get_contents("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,NZD");
+            $ethjson = file_get_contents("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,NZD");
+            $dogejson = file_get_contents("https://min-api.cryptocompare.com/data/price?fsym=DOGE&tsyms=USD,NZD");
             $btcdata = json_decode($btcjson, true);
-            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'BTC -> USD: $' . $btcdata["bpi"]["USD"]["rate"]));
+            $ethdata = json_decode($ethjson, true);
+            $dogedata = json_decode($dogejson, true);
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, 'parse_mode' => 'Markdown', "text" => '*BTC -> USD:* $' . $btcdata["USD"] . ', *NZD:* $' . $btcdata["NZD"] . '
+*ETH -> USD:* $' . $ethdata["USD"] . ', *NZD:* $' . $ethdata["NZD"] . '
+*DOGE -> USD:* $' . $dogedata["USD"] . ', *NZD:* $' . $dogedata["NZD"]));
         } else if (strpos($text, "/austin") === 0) {
             $austin = file_get_contents("https://zhang.nz/austin.php?api=1");
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $austin));
@@ -425,7 +431,7 @@ function processMessage($message)
             }
             $probf = fopen('sameprob.txt', "w");
             if (rand(1, $probr) == 1) {
-                $prob = 200;
+                $prob = 256;
                 apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $sender[first_name] . ', you can\'t just keep saying same. (probability was 1/' . $probr . ', setting to 1/' . $prob . ')'));
             } else {
 //            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'same probability set to 1/'.$prob));
