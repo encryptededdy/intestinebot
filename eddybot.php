@@ -253,9 +253,9 @@ function processMessage($message)
             $btcdata = json_decode($btcjson, true);
             $ethdata = json_decode($ethjson, true);
             $dogedata = json_decode($dogejson, true);
-            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, 'parse_mode' => 'Markdown', "text" => '*BTC -> USD:* $' . $btcdata["USD"] . ', *NZD:* $' . $btcdata["NZD"] . '
-*ETH -> USD:* $' . $ethdata["USD"] . ', *NZD:* $' . $ethdata["NZD"] . '
-*DOGE -> USD:* $' . $dogedata["USD"] . ', *NZD:* $' . $dogedata["NZD"]));
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, 'parse_mode' => 'Markdown', "text" => '*BTC ➜ USD:* $' . $btcdata["USD"] . ', *NZD:* $' . $btcdata["NZD"] . '
+*ETH ➜ USD:* $' . $ethdata["USD"] . ', *NZD:* $' . $ethdata["NZD"] . '
+*XDG ➜ USD:* $' . $dogedata["USD"] . ', *NZD:* $' . $dogedata["NZD"]));
         } else if (strpos($text, "/austin") === 0) {
             $austin = file_get_contents("https://zhang.nz/austin.php?api=1");
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $austin));
@@ -483,7 +483,8 @@ function processMessage($message)
 
             if ($args[1] == "balance") {
                 // Check balance
-                apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => '$'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC'));
+                apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => '$'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC.
+Total Value (current ex rate): $'.($balCrypto*$btcprice+$balUSD).' USD'));
             } else if ($args[1] == "buy") {
                 if (is_numeric($args[2]) && $args[2] > 0) {
                     // Buy Bitcoin
