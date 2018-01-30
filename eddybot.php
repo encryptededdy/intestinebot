@@ -455,10 +455,10 @@ function processMessage($message)
             $btcjson = file_get_contents("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD");
             $btcdata = json_decode($btcjson, true);
             $btcprice = $btcdata["USD"];
-
+	    $stmt->close();
             // Prepare log statement
             $logstmt = $conn->prepare("INSERT INTO `tradingsimulatorlog` (`userid`, `crypto`, `usd`, `price`) VALUES (?, ?, ?, ?)");
-            $logstmt->bind_param("iddd", $sender['id'], $changeCrypto, $changeUSD, $btcprice);            
+            $logstmt->bind_param("iddd", $sender['id'], $changeCrypto, $changeUSD, $btcprice);
 
             if (!$result) {
                 // Starting values
