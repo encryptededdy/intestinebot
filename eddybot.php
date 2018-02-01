@@ -486,10 +486,18 @@ function processMessage($message)
                 apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => '$'.$balUSD.' USD, Ƀ'.$balCrypto.' BTC.
 Total Value (current ex rate): $'.($balCrypto*$btcprice+$balUSD).' USD'));
             } else if ($args[1] == "buy") {
-                if (is_numeric($args[2]) && $args[2] > 0) {
+                if (is_numeric($args[2]) && $args[2] > 0 || $args[2] == "all") {
                     // Buy Bitcoin
-                    $amountCrypto = $args[2];
+                    if ($args[2] == "all") {
+                        $amountCrypto = $balUSD*(1/$btcprice);
+                    } else {
+                        $amountCrypto = $args[2];
+                    }                    
                     $amountUSD = $amountCrypto*$btcprice;
+                    if ($amountCrypto < 0.0001 && $args[2] != "all") {
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Minimum Transaction Ƀ0.0001'));
+                        return;
+                    }
                     if ($amountUSD > $balUSD) {
                         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Insufficent USD funds (you need $'.$amountUSD.')'));
                     } else {
@@ -506,10 +514,18 @@ Total Value (current ex rate): $'.($balCrypto*$btcprice+$balUSD).' USD'));
                     apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Please specify the amount of BTC to purchase'));
                 }
             } else if ($args[1] == "sell") {
-                if (is_numeric($args[2]) && $args[2] > 0) {
+                if (is_numeric($args[2]) && $args[2] > 0 || $args[2] == "all") {
                     // Sell Bitcoin
-                    $amountCrypto = $args[2];
+                    if ($args[2] == "all") {
+                        $amountCrypto = $balCrypto;
+                    } else {
+                        $amountCrypto = $args[2];
+                    }
                     $amountUSD = $amountCrypto*$btcprice;
+                    if ($amountCrypto < 0.0001 && $args[2] != "all") {
+                        apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Minimum Transaction Ƀ0.0001'));
+                        return;
+                    }
                     if ($amountCrypto > $balCrypto) {
                         apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'Insufficent BTC funds (you need Ƀ'.$amountCrypto.')'));
                     } else {
