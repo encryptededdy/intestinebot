@@ -331,7 +331,8 @@ function processMessage($message)
             $thyme = time();
             global $servername, $username, $password, $dbname;
             $conn = mysqli_connect($servername, $username, $password, $dbname);
-            $sql = "SELECT * FROM `chatlog_ece` WHERE `chatid` = " . $chat_id . " ORDER BY `datetime` DESC LIMIT " . $args[1];
+            $limit = mysqli_real_escape_string($conn, $args[1]);
+            $sql = "SELECT * FROM `chatlog_ece` WHERE `chatid` = " . $chat_id . " ORDER BY `datetime` DESC LIMIT " . $limit;
             $result = mysqli_query($conn, $sql);
             for ($i = ($args[1] - 1); $i >= 0; $i--) {
                 $array = mysqli_fetch_array($result, MYSQLI_ASSOC);
