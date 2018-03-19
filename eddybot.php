@@ -18,6 +18,7 @@ class Commands
     const    austin = "/austin ";
     const    asb = "/asb ";
     const    bs = "/bs ";
+    const    kiwibank = "/kiwibank";
     const    globalwarming = "/globalwarming ";
     const    about = "/about ";
     const    westpac = "/westpac ";
@@ -265,6 +266,9 @@ function processMessage($message)
         } else if (strpos($text, "/asb") === 0) {
             $asb = file_get_contents("https://zhang.nz/botgen/asb.php");
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
+	} else if (strpos($text, "/kiwibank") === 0) {
+            $kiwibank_msg = Array("🥝🏦", "🥝💳", "🇳🇿🤑", "🇳🇿🏧", "J I M A N D E R T O N");
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $kiwibank_msg[array_rand($kiwibank_msg)]));
         } else if (strpos($text, "/bs") === 0) {
             $asb = file_get_contents("https://zhang.nz/botgen/corporatebs.php");
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $asb));
