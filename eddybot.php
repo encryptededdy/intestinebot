@@ -67,6 +67,20 @@ function time_since($since)
 
 // same
 
+// String reverse
+
+function strrev_multiencoding ($string, $encoding = null) {
+    if ($encoding === null) {
+        $encoding = mb_detect_encoding($string);
+    }
+    $length   = mb_strlen($string, $encoding);
+    $reversed = '';
+    while ($length-- > 0) {
+        $reversed .= mb_substr($string, $length, 1, $encoding);
+    }
+    return $reversed;
+}
+
 // mysql
 
 date_default_timezone_set('Pacific/Auckland');
@@ -290,7 +304,7 @@ function processMessage($message)
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => 'fwang'));
         } else if (strpos($text, Commands::reversestr) === 0) {
             $string = substr($text, 12);
-            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => strrev($string)));
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => strrev_multiencoding($string)));
         } else if (strpos($text, "/quake") === 0) {
             $args = preg_split("/[\s,]+/", $text);
             if (empty($args[1])) {
