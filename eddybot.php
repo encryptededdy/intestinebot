@@ -37,6 +37,7 @@ class Commands
     const    help = "/help";
     const    gnawf = "/gnawf";
     const    reversestr = "/reversestr";
+    const    sid = "/sid";
 }
 
 // for quakey
@@ -424,7 +425,10 @@ function processMessage($message)
             $text = substr($text, 11);
             $fullwidth = mb_convert_kana($text, "A");
             apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => $fullwidth));
-        } else if (stripos($text, Commands::shitpost) === 0) {
+	} else if (stripos($text, Commands::sid) === 0) {
+            $text = substr($text, 4);
+            apiRequestWebhook("sendMessage", array('chat_id' => $chat_id, "text" => "Lol shut the fuck up u idiot fuck stupid dumb" . $text));
+        } else if (stripos($text, Commands::shitpost) === 0) {	 
             $text = substr($text, 10);
             $exploded = explode(" ", $text);
             $out = "";
